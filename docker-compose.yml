@@ -14,6 +14,7 @@ services:
   php:
     container_name: php-st
     build: ./conf/php
+
     volumes:
       - ./bedrock:/var/www/html
     networks:
