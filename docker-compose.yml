@@ -1,0 +1,65 @@
+version: '3.9'
+services:
+
+  nginx:
+    container_name: nginx-st
+    build: ./conf/nginx
+    volumes:
+      - ./bedrock:/var/www/html
+    ports:
+      - '80:80'
+    networks:
+      - wordpress-network
+
+  php:
+    container_name: php-st
+    build: ./conf/php
+    volumes:
+      - ./bedrock:/var/www/html
+    networks:
+      - wordpress-network
+
+
+  database:
+    container_name: wordpress-db-st
+    image: mariadb:latest
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=wp
+      - MYSQL_USER=nic1k
+      - MYSQL_PASSWORD=nic1k
+      - MYSQL_ROOT_PASSWORD=nic1k
+    volumes:
+      - wordpress-volume-db:/var/lib/mysql
+    networks:
+      - wordpress-network
+
+  phpmyadmin:
+    container_name: phpmyadmin-st
+    image: phpmyadmin
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=wordpress-db-st
+    networks:
+      - "wordpress-network"
+
+  mailhog:
+    container_name: mailhog-st
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - wordpress-network
+
+volumes:
+  wordpress-volume-db:
+
+
+networks:
+  wordpress-network:
+    driver: bridge
